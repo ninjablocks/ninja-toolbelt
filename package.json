@@ -1,0 +1,16 @@
+{
+  "name": "ninja-toolbelt",
+  "version": "0.0.0",
+  "description": "CLI utility belt for Ninja Blocks",
+  "main": "index.js",
+  "dependencies": {
+    "commander": "~1.0.4"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "make test"
+  },
+  "repository": "",
+  "author": "",
+  "license": "MIT"
+}

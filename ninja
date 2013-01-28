@@ -1,0 +1,24 @@
+#!/usr/bin/env node
+var program = require('commander')
+  , pkg = require('./package.json')
+  , commands = require('./bin');
+
+program
+    .version(pkg.version)
+    .usage('<command>')
+
+program.parse(process.argv);
+
+Object.keys(commands).forEach(function(cmd) {
+  commands[cmd](program);
+});
+
+program.parse(process.argv);
+
+// If they gave no or invalid command to execute
+//
+if (!program.args.length) {
+  program.outputHelp();
+  return;
+}
+

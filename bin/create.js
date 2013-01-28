@@ -12,7 +12,6 @@ var eol = 'win32' == os.platform() ? '\r\n' : '\n'
 module.exports = function(program) {
 
   this.program = program;
-  // this.path =
   program
     .command('create')
     .usage('<module name>')

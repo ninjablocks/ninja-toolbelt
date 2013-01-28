@@ -7,7 +7,6 @@ program
     .version(pkg.version)
     .usage('<command>')
 
-program.parse(process.argv);
 
 Object.keys(commands).forEach(function(cmd) {
   commands[cmd](program);

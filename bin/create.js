@@ -11,7 +11,6 @@ var eol = 'win32' == os.platform() ? '\r\n' : '\n'
 
 module.exports = function(program) {
 
-  this.path = program.args.length==1 ? '.' : program.args[1];
   this.program = program;
   // this.path =
   program
@@ -22,14 +21,16 @@ module.exports = function(program) {
 
 function createModule(command) {
 
-  emptyDirectory(this.path, function(empty){
+  var path = this.program.args.shift() || '.';
+
+  emptyDirectory(path, function(empty){
     if (empty || this.program.force) {
-      createModuleAt(this.path);
+      createModuleAt(path);
     } else {
       this.program.confirm('destination is not empty, continue? ', function(ok){
         if (ok) {
           process.stdin.destroy();
-          createModuleAt(this.path);
+          createModuleAt(path);
         } else {
           abort('aborting');
         }

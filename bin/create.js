@@ -60,6 +60,9 @@ function createModuleAt(path) {
 
 var constructor = [
     'var Device = require(\'./lib/device\')'
+  , '  , util = require(\'util\')'
+  , '  , stream = require(\'stream\');'
+  , ''
   , '// Give our module a stream interface'
   , 'util.inherits(myModule,stream);'
   , ''
@@ -94,7 +97,6 @@ var constructor = [
   , ''
   , '    // Register a device'
   , '    self.emit(\'register\', new Device());'
-  , '    self.emit(\'config\', { hello:\'world\' });'
   , '  });'
   , '};'
   , ''
@@ -111,11 +113,14 @@ var constructor = [
 ].join(eol);
 
 var device = [
-    ''
-  , 'var stream = require(\'stream\');'
+  , 'var stream = require(\'stream\')'
+  , '  , util = require(\'util\');'
   , ''
   , '// Give our module a stream interface'
   , 'util.inherits(Device,stream);'
+  , ''
+  , '// Export it'
+  , 'module.exports=Device;'
   , ''
   , '/**'
   , ' * Creates a new Device Object'
@@ -142,7 +147,7 @@ var device = [
   , ''
   , '  this.V = 0;'
   , '  this.D = 0;'
-  , '  this.G = 0;'
+  , '  this.G = "0"; // G is a string'
   , ''
   , '  process.nextTick(function() {'
   , ''
@@ -159,6 +164,7 @@ var device = [
   , 'Device.prototype.write = function(data) {'
   , ''
   , '  // I\'m being actuated with data!'
+  , '  console.log(data);'
   , '};'
   , ''
 ].join(eol);

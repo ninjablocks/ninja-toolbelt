@@ -146,7 +146,7 @@ var device = [
   , '  this.writeable = true;'
   , ''
   , '  this.G = "0"; // G is a string a represents the channel'
-  , '  this.V = 0 // 0 is Ninja Blocks\' device list'
+  , '  this.V = 0; // 0 is Ninja Blocks\' device list'
   , '  this.D = 2000; // 2000 is a generic Ninja Blocks sandbox device'
   , ''
   , '  process.nextTick(function() {'

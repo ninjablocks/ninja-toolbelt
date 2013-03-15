@@ -3,7 +3,7 @@ Ninja Toolbelt
 
 ## Installation
 ```
-npm install -g ninja-toolbelt
+sudo npm install -g ninja-toolbelt
 ```
 
 ## Usage

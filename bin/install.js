@@ -3,6 +3,7 @@ var request = require('request')
 
 var unzip = require('unzip')
 var async = require('async')
+var rmrf = require('rimraf')
 var path = require('path')
 var npm = require('npm')
 var fs = require('fs')
@@ -15,7 +16,7 @@ module.exports = function(program) {
     .usage('<module name>')
     .option('-h, hello')
     .action(fetch.bind(this));
-};
+}
 
 function fetch(repo,dest) {
 
@@ -28,12 +29,12 @@ function fetch(repo,dest) {
       console.error("Error retrieving driver",er)
       process.exit(1);
     })
-};
+}
 
 function sanitize(repo) {
 
   return repo.replace(/\.git|\/?$/g, '');
-};
+}
 
 function installDependencies(repo,dest) {
 
@@ -45,15 +46,24 @@ function installDependencies(repo,dest) {
   async.series([
     npm.load,
     npm.install,
-    fs.rename.bind(this, driverPath, driverPath.replace(/-master?$/g,''))
+    moveIntoPlace.bind(this,driverPath)
   ],function(err) {
 
     if (err) {
       console.error(err);
       process.exit(1)
     } else {
-      console.log('Done')
       process.exit(0)
     }
   })
-};
+}
+
+function moveIntoPlace(driverPath,cb) {
+
+  var newPath = driverPath.replace(/-master?$/g,'');
+
+  rmrf(newPath,function(err){
+    if (err) return cb(err);
+    else fs.rename(driverPath, newPath, cb);
+  })
+}

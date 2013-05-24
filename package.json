@@ -1,6 +1,6 @@
 {
   "name": "ninja-toolbelt",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "CLI utility belt for Ninja Blocks",
   "main": "index.js",
   "dependencies": {
@@ -9,7 +9,8 @@
     "mkdirp": "~0.3.4",
     "unzip": "~0.1.7",
     "request": "~2.21.0",
-    "npm": "~1.2.22"
+    "npm": "~1.2.22",
+    "rimraf": "~2.1.4"
   },
   "devDependencies": {},
   "scripts": {

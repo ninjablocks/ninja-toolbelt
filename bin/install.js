@@ -1,6 +1,6 @@
-var request = require('request')
 "use strict"
 
+var request = require('request')
 var unzip = require('unzip')
 var async = require('async')
 var rmrf = require('rimraf')

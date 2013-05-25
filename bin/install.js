@@ -42,7 +42,7 @@ function fetch(repo,dest,opts) {
 
 function configure(repo,dest) {
 
-  // check if we are already configured
+  // bail if we have been fully configured
   if (REMOTE_LOCATION && EXTRACTED_PATH && DESTINATION_PATH) return
 
   // bitbucket
@@ -52,14 +52,20 @@ function configure(repo,dest) {
     REMOTE_LOCATION   = 'https://bitbucket.org/' + sanitized + '/get/default.zip'
     DESTINATION_PATH  = path.resolve(dest, path.basename(sanitized))
 
-    // bitbucket appends the last commit ref to the folder name
-    // that's extracted, so we need to go and try find it in the folder
-    // after its been extracted
+    // bitbucket appends the last commit ref
+    // to the folder name that's extracted.
+    // We need to go and try find the folder
+    // after it's been extracted
+
     var extractedFolder = fs.readdirSync(dest).filter(function(element){
       return (element.indexOf(sanitized.replace('/','-')) === 0)
     })
 
-    // because of the above behaviour, we have to call `configure` twice
+    // due to the above behaviour, we call `configure` twice,
+    // before the archive is downloaded, and after it has been extracted.
+    // in the second call `extractedFolder` will contain the necessary
+    // extracted folder name in the array.
+
     if (extractedFolder.length === 1)
       EXTRACTED_PATH = path.resolve(dest, extractedFolder[0])
 

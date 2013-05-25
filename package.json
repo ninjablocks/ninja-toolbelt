@@ -19,7 +19,7 @@
   "bin": {
     "ninja": "./ninja"
   },
-  "repository": "",
-  "author": "",
+  "repository": "https://github.com/ninjablocks/ninja-toolbelt.git",
+  "author": "Daniel Friedman",
   "license": "MIT"
 }

@@ -19,7 +19,7 @@ module.exports = function(program) {
 
 function fetch(repo,dest) {
 
-  dest = dest || process.cwd();
+  dest = determineDestination(dest);
 
   request(sanitize(repo) + '/archive/master.zip')
     .pipe(unzip.Extract({ path: dest }))
@@ -28,6 +28,11 @@ function fetch(repo,dest) {
       console.error("Error retrieving driver",er)
       process.exit(1);
     })
+}
+
+function determineDestination(dest) {
+
+  return typeof dest === 'string' && dest || process.cwd()
 }
 
 function sanitize(repo) {

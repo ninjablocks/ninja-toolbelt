@@ -18,6 +18,7 @@ module.exports = function(program) {
 }
 
 function fetch(repo,dest) {
+  console.log('\x1b[36m','ninja','\x1b[0m','fetching driver');
 
   dest = determineDestination(dest);
 
@@ -42,6 +43,7 @@ function sanitize(repo) {
 
 function installDependencies(repo,dest) {
 
+  console.log('\x1b[36m','ninja','\x1b[0m','installing dependencies');
   // Github adds -master to the end of the directory unzipped
   // TODO get the folder name from the unzip?
   var driverPath = path.resolve(dest, path.basename(repo)) + '-master';
@@ -54,15 +56,18 @@ function installDependencies(repo,dest) {
   ],function(err) {
 
     if (err) {
-      console.error(err);
+      console.error('\x1b[31m','ninja','\x1b[0m','error',err);
       process.exit(1)
     } else {
+      console.log('\x1b[32m','ninja','\x1b[0m','done');
       process.exit(0)
     }
   })
 }
 
 function moveIntoPlace(driverPath,cb) {
+
+  console.log('\x1b[36m','ninja','\x1b[0m','moving into place');
 
   var newPath = driverPath.replace(/-master?$/g,'');
 

@@ -82,10 +82,11 @@ function configure(repo,dest) {
 
 function installDependencies(repo,dest) {
 
+  console.log('\x1b[36m','ninja','\x1b[0m','installing dependencies')
+
   // Call configure again because of bitbucket.
   configure.apply(this,arguments)
 
-  console.log('\x1b[36m','ninja','\x1b[0m','installing dependencies')
   process.chdir(EXTRACTED_PATH)
 
   async.series([

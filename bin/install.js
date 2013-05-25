@@ -123,6 +123,6 @@ function moveIntoPlace(cb) {
 }
 
 function error(err) {
-  console.error('\x1b[31m','ninja','\x1b[0m','error', err)
+  console.error('\x1b[31m','ninja','\x1b[0m','error:', err)
   process.exit(1)
 }

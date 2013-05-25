@@ -32,7 +32,6 @@ function fetch(repo,dest,opts) {
     if (err || resp.statusCode !== 200) {
       error(err || 'received http status code '+resp.statusCode);
     }
-
   }).pipe(unzip.Extract({ path: dest }))
     .on("close", installDependencies.bind(this,repo,dest,opts))
     .on("error", error)
@@ -96,7 +95,11 @@ function installDependencies(repo,dest) {
   ],function(err) {
 
     if (err) {
-      return error(err)
+      process.chdir('..')
+      rmrf(EXTRACTED_PATH, function(e) {
+        error(e||err)
+      })
+      return
     }
 
     console.log('\x1b[32m','ninja','\x1b[0m','done')
@@ -111,7 +114,8 @@ function moveIntoPlace(cb) {
   rmrf(DESTINATION_PATH, function(err) {
 
     if (err) {
-      return cb(err)
+      cb(err);
+      return
     }
 
     fs.rename(EXTRACTED_PATH, DESTINATION_PATH, cb)

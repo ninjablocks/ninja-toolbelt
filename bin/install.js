@@ -33,7 +33,7 @@ function fetch(repo,dest,opts) {
 
   request(REMOTE_LOCATION)
     .pipe(unzip.Extract({ path: dest }))
-    .on("close", installDependencies)
+    .on("close", installDependencies.bind(this,repo,dest,opts))
     .on("error", function (err) {
       console.error('\x1b[31m','ninja','\x1b[0m','error', err)
       process.exit(1)
@@ -49,23 +49,27 @@ function configure(repo,dest,opts) {
     var extractedFolder = fs.readdirSync(dest).filter(function(element){
       return (element.indexOf(sanitized.replace('/','-')) === 0);
     })
-
     REMOTE_LOCATION   = 'https://bitbucket.org/' + sanitized + '/get/default.zip';
     DESTINATION_PATH  = path.resolve(dest, path.basename(sanitized))
+    // Because we won't know what the folder is until after we extract it
+    // We return if we don't have it knowing we'll be calling configure again
+    if (extractedFolder.length===0) return
     EXTRACTED_PATH    = path.resolve(dest, extractedFolder[0])
-
     return
   }
 
   // default to github
   var sanitized = repo.replace(/https:\/\/github.com\/|\.git|\/?$/g, '')
-  REMOTE_LOCATION = 'https://github.com/' + sanitized + '/archive/master.zip'
+  REMOTE_LOCATION   = 'https://github.com/' + sanitized + '/archive/master.zip'
   DESTINATION_PATH  = path.resolve(dest, path.basename(sanitized))
   EXTRACTED_PATH    = DESTINATION_PATH + '-master'
 }
 
 
-function installDependencies() {
+function installDependencies(repo,dest,opts) {
+
+  // Call configure again because of bitbucket.
+  configure.apply(this,arguments);
 
   console.log('\x1b[36m','ninja','\x1b[0m','installing dependencies')
   process.chdir(EXTRACTED_PATH);

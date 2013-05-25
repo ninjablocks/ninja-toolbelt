@@ -11,9 +11,14 @@ sudo npm install -g ninja-toolbelt
 ninja --help
 ```
 
-## Create a new module scaffold
-Currently requires `develop` branch
+## ninja install
+Fetch and install a driver from GitHub, optionally into `destination`, ie `/opt/ninja/drivers/`.
 ```
-cd PATH_TO_NINJA_CLIENT/ninja_modules
-ninja create <module name>
+ninja install <github repo> [destination]
+```
+
+## ninja create
+Create a hello world driver
+```
+ninja create <driver name>
 ```

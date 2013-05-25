@@ -25,7 +25,7 @@ function fetch(repo,dest,opts) {
 
   configure(repo,dest,opts)
 
-  console.log('\x1b[36m','ninja','\x1b[0m','fetching driver')
+  console.log('\x1b[36m','ninja','\x1b[0m','fetching')
 
   request(REMOTE_LOCATION, function(err,resp){
 

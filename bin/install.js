@@ -29,13 +29,15 @@ function fetch(repo,dest,opts) {
 
   console.log('\x1b[36m','ninja','\x1b[0m','fetching driver')
 
-  request(REMOTE_LOCATION)
-    .pipe(unzip.Extract({ path: dest }))
+  request(REMOTE_LOCATION,function(err,resp){
+
+    if (err || resp.statusCode !== 200) {
+      error(err || 'received http status code '+resp.statusCode);
+    }
+
+  }).pipe(unzip.Extract({ path: dest }))
     .on("close", installDependencies.bind(this,repo,dest,opts))
-    .on("error", function (err) {
-      console.error('\x1b[31m','ninja','\x1b[0m','error', err)
-      process.exit(1)
-    })
+    .on("error", error)
 }
 
 function configure(repo,dest) {
@@ -50,12 +52,14 @@ function configure(repo,dest) {
     REMOTE_LOCATION   = 'https://bitbucket.org/' + sanitized + '/get/default.zip'
     DESTINATION_PATH  = path.resolve(dest, path.basename(sanitized))
 
+    // bitbucket appends the last commit ref to the folder name
+    // that's extracted, so we need to go and try find it in the folder
+    // after its been extracted
     var extractedFolder = fs.readdirSync(dest).filter(function(element){
       return (element.indexOf(sanitized.replace('/','-')) === 0)
     })
 
-    // We won't know what the folder is until after we extract it
-    // That's why we call config twice
+    // because of the above behaviour, we have to call `configure` twice
     if (extractedFolder.length === 1)
       EXTRACTED_PATH = path.resolve(dest, extractedFolder[0])
 
@@ -64,7 +68,7 @@ function configure(repo,dest) {
 
   // default to github
   if (!repo.match(/github.com/g)) {
-    console.error('\x1b[33m','ninja','\x1b[0m','url not provided, assuming github')
+    console.log('\x1b[33m','ninja','\x1b[0m','url not provided, assuming github')
   }
 
   var sanitized     = repo.replace(/https:\/\/github.com\/|\.git|\/?$/g, '')
@@ -88,9 +92,7 @@ function installDependencies(repo,dest) {
   ],function(err) {
 
     if (err) {
-      console.error('\x1b[31m','ninja','\x1b[0m','error',err)
-      process.exit(1)
-      return
+      return error(err)
     }
 
     console.log('\x1b[32m','ninja','\x1b[0m','done')
@@ -110,4 +112,9 @@ function moveIntoPlace(cb) {
 
     fs.rename(EXTRACTED_PATH, DESTINATION_PATH, cb)
   })
+}
+
+function error(err) {
+  console.error('\x1b[31m','ninja','\x1b[0m','error', err)
+  process.exit(1)
 }

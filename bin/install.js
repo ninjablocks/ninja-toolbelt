@@ -13,8 +13,7 @@ module.exports = function(program) {
   this.program = program;
   program
     .command('install')
-    .usage('<module name>')
-    .option('-h, hello')
+    .usage('<github repo>')
     .action(fetch.bind(this));
 }
 

@@ -12,8 +12,6 @@ var REMOTE_LOCATION
 var EXTRACTED_PATH
 
 module.exports = function(program) {
-
-  this.program = program;
   program
     .command('install <repository>')
     .description('fetch and install a driver from some repo')

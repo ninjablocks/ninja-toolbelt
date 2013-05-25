@@ -16,9 +16,7 @@ module.exports = function(program) {
   this.program = program;
   program
     .command('install <repository>')
-    .description('fetch and install a driver')
-    .option("-g, --github", "fetch from github (default)")
-    .option("-b, --bitbucket", "fetch from bitbucket")
+    .description('fetch and install a driver from some repo')
     .action(fetch.bind(this));
 }
 
@@ -40,10 +38,13 @@ function fetch(repo,dest,opts) {
     })
 }
 
-function configure(repo,dest,opts) {
+function configure(repo,dest) {
+
+  // check if we are already configured
+  if (REMOTE_LOCATION && EXTRACTED_PATH && DESTINATION_PATH) return
 
   // bitbucket
-  if (opts.bitbucket) {
+  if (repo.match(/bitbucket.org/g)) {
 
     var sanitized = repo.replace(/https:\/\/bitbucket.org\/|\.git|\/?$/g, '')
     var extractedFolder = fs.readdirSync(dest).filter(function(element){
@@ -59,6 +60,9 @@ function configure(repo,dest,opts) {
   }
 
   // default to github
+  if (!repo.match(/github.com/g)) {
+    console.error('\x1b[33m','ninja','\x1b[0m','url not provided, assuming github')
+  }
   var sanitized = repo.replace(/https:\/\/github.com\/|\.git|\/?$/g, '')
   REMOTE_LOCATION   = 'https://github.com/' + sanitized + '/archive/master.zip'
   DESTINATION_PATH  = path.resolve(dest, path.basename(sanitized))
@@ -66,7 +70,7 @@ function configure(repo,dest,opts) {
 }
 
 
-function installDependencies(repo,dest,opts) {
+function installDependencies(repo,dest) {
 
   // Call configure again because of bitbucket.
   configure.apply(this,arguments);

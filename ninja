@@ -7,17 +7,8 @@ program
     .version(pkg.version)
     .usage('<command>')
 
-
 Object.keys(commands).forEach(function(cmd) {
   commands[cmd](program);
 });
 
 program.parse(process.argv);
-
-// If they gave no or invalid command to execute
-//
-if (!program.args.length) {
-  program.outputHelp();
-  return;
-}
-

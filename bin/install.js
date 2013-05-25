@@ -1,9 +1,9 @@
 "use strict"
 
 var request = require('request')
+var rmrf = require('rimraf')
 var unzip = require('unzip')
 var async = require('async')
-var rmrf = require('rimraf')
 var path = require('path')
 var npm = require('npm')
 var fs = require('fs')
@@ -25,7 +25,7 @@ function fetch(repo,dest,opts) {
   opts = (typeof dest === 'object' && dest || opts)
   dest = (typeof dest === 'string' && dest || process.cwd())
 
-  configure(repo,dest,opts);
+  configure(repo,dest,opts)
 
   console.log('\x1b[36m','ninja','\x1b[0m','fetching driver')
 
@@ -51,13 +51,14 @@ function configure(repo,dest) {
     DESTINATION_PATH  = path.resolve(dest, path.basename(sanitized))
 
     var extractedFolder = fs.readdirSync(dest).filter(function(element){
-      return (element.indexOf(sanitized.replace('/','-')) === 0);
+      return (element.indexOf(sanitized.replace('/','-')) === 0)
     })
 
     // We won't know what the folder is until after we extract it
     // That's why we call config twice
     if (extractedFolder.length === 1)
       EXTRACTED_PATH = path.resolve(dest, extractedFolder[0])
+
     return
   }
 
@@ -65,18 +66,20 @@ function configure(repo,dest) {
   if (!repo.match(/github.com/g)) {
     console.error('\x1b[33m','ninja','\x1b[0m','url not provided, assuming github')
   }
+
   var sanitized     = repo.replace(/https:\/\/github.com\/|\.git|\/?$/g, '')
   REMOTE_LOCATION   = 'https://github.com/' + sanitized + '/archive/master.zip'
   DESTINATION_PATH  = path.resolve(dest, path.basename(sanitized))
   EXTRACTED_PATH    = DESTINATION_PATH + '-master'
+}
 
 function installDependencies(repo,dest) {
 
   // Call configure again because of bitbucket.
-  configure.apply(this,arguments);
+  configure.apply(this,arguments)
 
   console.log('\x1b[36m','ninja','\x1b[0m','installing dependencies')
-  process.chdir(EXTRACTED_PATH);
+  process.chdir(EXTRACTED_PATH)
 
   async.series([
     npm.load,
@@ -87,10 +90,11 @@ function installDependencies(repo,dest) {
     if (err) {
       console.error('\x1b[31m','ninja','\x1b[0m','error',err)
       process.exit(1)
-    } else {
-      console.log('\x1b[32m','ninja','\x1b[0m','done')
-      process.exit(0)
+      return
     }
+
+    console.log('\x1b[32m','ninja','\x1b[0m','done')
+    process.exit(0)
   })
 }
 
@@ -99,7 +103,11 @@ function moveIntoPlace(cb) {
   console.log('\x1b[36m','ninja','\x1b[0m','moving into place')
 
   rmrf(DESTINATION_PATH, function(err) {
-    if (err) return cb(err)
-    else fs.rename(EXTRACTED_PATH, DESTINATION_PATH, cb)
+
+    if (err) {
+      return cb(err)
+    }
+
+    fs.rename(EXTRACTED_PATH, DESTINATION_PATH, cb)
   })
 }

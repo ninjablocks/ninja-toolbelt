@@ -27,7 +27,7 @@ function fetch(repo,dest,opts) {
 
   console.log('\x1b[36m','ninja','\x1b[0m','fetching driver')
 
-  request(REMOTE_LOCATION,function(err,resp){
+  request(REMOTE_LOCATION, function(err,resp){
 
     if (err || resp.statusCode !== 200) {
       error(err || 'received http status code '+resp.statusCode);

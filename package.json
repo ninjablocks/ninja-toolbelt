@@ -10,7 +10,8 @@
     "unzip": "~0.1.7",
     "request": "~2.21.0",
     "npm": "~1.2.22",
-    "rimraf": "~2.1.4"
+    "rimraf": "~2.1.4",
+    "async": "~0.2.8"
   },
   "devDependencies": {},
   "scripts": {

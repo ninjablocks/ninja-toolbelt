@@ -73,8 +73,8 @@ function configure(repo,dest) {
   if (!repo.match(/github.com/g)) {
     console.log('\x1b[33m','ninja','\x1b[0m','url not provided, assuming github')
   }
-
   var sanitized     = repo.replace(/https:\/\/github.com\/|\.git|\/?$/g, '')
+  sanitized = sanitized.replace('git@github.com:', '')
   REMOTE_LOCATION   = 'https://github.com/' + sanitized + '/archive/master.zip'
   DESTINATION_PATH  = path.resolve(dest, path.basename(sanitized))
   EXTRACTED_PATH    = DESTINATION_PATH + '-master'

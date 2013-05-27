@@ -1,0 +1,28 @@
+#!/usr/bin/env node
+"use strict"
+
+var program = require('commander')
+var path = require('path')
+var fs = require('fs')
+
+program
+  .option('-d, --directory [folder]', 'Location of drivers folder', process.cwd())
+  .description('fetch and install a driver from some repo')
+  .parse(process.argv);
+
+list(program.directory)
+
+function list(directory) {
+
+  var drivers = fs.readdirSync(directory)
+    .filter(validatePackage)
+    .forEach(log)
+}
+
+function validatePackage(folder) {
+  return fs.existsSync(path.join(program.directory,folder,'package.json'))
+}
+
+function log(driver) {
+  console.log(driver)
+}

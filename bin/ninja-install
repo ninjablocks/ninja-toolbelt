@@ -103,7 +103,7 @@ function installDependencies(repo,dest) {
     moveIntoPlace
   ],function(err) {
     if (err) {
-      console.error(err)
+      console.error('\x1b[31m ninja \x1b[0m error', err)
       process.chdir(prevDir)
       rmrf(EXTRACTED_PATH,function(e) {
         error(err)

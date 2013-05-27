@@ -1,32 +1,30 @@
-var exec = require('child_process').exec
-  , mkdirp = require('mkdirp')
-  , pkg = require('../package.json')
-  , version = pkg.version
-  , os = require('os')
-  , fs = require('fs');
+#!/usr/bin/env node
+var program = require('commander')
+var mkdirp = require('mkdirp')
+var pkg = require('../package.json')
+var os = require('os')
+var fs = require('fs')
 
 // end-of-line code
 
 var eol = 'win32' == os.platform() ? '\r\n' : '\n'
 
-module.exports = function(program) {
+program
+  .version(pkg.version)
+  .usage('<module name>')
+  .parse(process.argv);
 
-  this.program = program;
-  program
-    .command('create')
-    .usage('<module name>')
-    .action(createModule.bind(this));
-};
+createModule(program.args[0])
 
 function createModule(command) {
 
-  var path = this.program.args.shift() || '.';
+  var path = program.args.shift() || '.';
 
   emptyDirectory(path, function(empty){
-    if (empty || this.program.force) {
+    if (empty || program.force) {
       createModuleAt(path);
     } else {
-      this.program.confirm('destination is not empty, continue? ', function(ok){
+      program.confirm('destination is not empty, continue? ', function(ok){
         if (ok) {
           process.stdin.destroy();
           createModuleAt(path);
@@ -35,7 +33,7 @@ function createModule(command) {
         }
       });
     }
-  }.bind(this));
+  });
 }
 
 function createModuleAt(path) {

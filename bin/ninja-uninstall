@@ -1,0 +1,51 @@
+#!/usr/bin/env node
+"use strict"
+
+var program = require('commander')
+var rmrf = require('rimraf')
+var path = require('path')
+var fs = require('fs')
+
+program
+  .option('-d, --driverPath [folder]', 'Location of drivers folder', process.cwd())
+  .option('-c, --configPath [folder]', 'Location of drivers configuration folder')
+  .description('fetch and install a driver from some repo')
+  .parse(process.argv);
+
+uninstall(program.args[0],program.driverPath,program.configPath)
+
+function uninstall(driver,driverPath,configPath) {
+  if(!driver || driver === 'undefined')
+    return error('Refusing to uninstall "%s"', driver)
+
+  var fullDriverPath = path.join(driverPath,driver);
+
+  if (!validatePackage(fullDriverPath))
+    return error('Could not validate package, cowardly refusing to uninstall "%s"', driver)
+
+  log('removing driver at %s',fullDriverPath)
+  rmrf.sync(fullDriverPath);
+
+  if (configPath) {
+    var fullConfigPath = path.join(configPath,driver);
+    log('removing configuration at %s',fullConfigPath)
+    rmrf.sync(fullConfigPath);
+
+  }
+  process.exit(0);
+}
+
+function validatePackage(folder) {
+  return fs.existsSync(path.join(folder,'package.json'))
+}
+
+function log(log) {
+  var args = [].slice.call(arguments, 1)
+  console.error.apply(console, ['\x1b[36m ninja \x1b[0m ' + log].concat(args))
+}
+
+function error(err) {
+  var args = [].slice.call(arguments, 1)
+  console.error.apply(console, ['\x1b[31m ninja \x1b[0m error ' + err].concat(args))
+  process.exit(1)
+}

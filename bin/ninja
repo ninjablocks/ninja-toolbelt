@@ -19,6 +19,8 @@ var cmd = program.args[0];
 
 // alias "install" as "add"
 if ('add' == cmd) cmd = 'install';
+if ('rm' == cmd) cmd = 'uninstall';
+
 
 // display help
 if (!cmd) {

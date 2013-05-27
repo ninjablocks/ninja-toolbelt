@@ -1,6 +1,8 @@
+#!/usr/bin/env node
 "use strict"
 
 var request = require('request')
+var program = require('commander')
 var rmrf = require('rimraf')
 var unzip = require('unzip')
 var async = require('async')
@@ -12,22 +14,22 @@ var DESTINATION_PATH
 var REMOTE_LOCATION
 var EXTRACTED_PATH
 
-module.exports = function(program) {
-  program
-    .command('install <repository>')
-    .description('fetch and install a driver from some repo')
-    .action(fetch.bind(this));
-}
+program
+  .option('-d, --dest [folder]', 'Destination folder', process.cwd())
+  .description('fetch and install a driver from some repo')
+  .parse(process.argv);
+
+fetch(program.args[0], program.dest)
 
 function fetch(repo,dest,opts) {
   if (!repo || repo === 'undefined') return error('Refusing to install "%s"', repo)
   opts = (typeof dest === 'object' && dest || opts)
   dest = (typeof dest === 'string' && dest || process.cwd())
 
-  console.log('\x1b[36m ninja \x1b[0m installing %s to %s', repo, dest)
+  console.info('\x1b[36m ninja \x1b[0m installing %s to %s', repo, dest)
   configure(repo,dest,opts)
 
-  console.log('\x1b[36m ninja \x1b[0m fetching %s', REMOTE_LOCATION)
+  console.info('\x1b[36m ninja \x1b[0m fetching %s', REMOTE_LOCATION)
 
   request(REMOTE_LOCATION, function(err,resp){
     if (err || resp.statusCode !== 200) {
@@ -74,7 +76,7 @@ function configure(repo,dest) {
 
   // default to github
   if (!repo.match(/github.com/g)) {
-    console.log('\x1b[33m ninja \x1b[0m url not provided, assuming github %s', repo)
+    console.info('\x1b[33m ninja \x1b[0m url not provided, assuming github %s', repo)
   }
   var sanitized     = repo.replace(/https:\/\/github.com\/|\.git|\/?$/g, '')
   sanitized = sanitized.replace('git@github.com:', '')
@@ -85,33 +87,36 @@ function configure(repo,dest) {
 
 function installDependencies(repo,dest) {
 
-  console.log('\x1b[36m ninja \x1b[0m installing %s dependencies', repo)
+  console.info('\x1b[36m ninja \x1b[0m installing %s dependencies', repo)
 
   // Call configure again because of bitbucket.
   configure.apply(this,arguments)
   var prevDir = process.cwd()
   process.chdir(EXTRACTED_PATH)
-
   async.series([
     npm.load,
+    function(done){
+      npm.color =  "always"
+      done()
+    },
     npm.install,
     moveIntoPlace
   ],function(err) {
     if (err) {
+      console.error(err)
       process.chdir(prevDir)
       rmrf(EXTRACTED_PATH,function(e) {
-        error(e||err)
+        error(err)
       })
-      return
     }
 
-    console.log('\x1b[32m ninja \x1b[0m done %s', repo)
+    console.info('\x1b[32m ninja \x1b[0m done %s', repo)
     process.exit(0)
   })
 }
 
 function moveIntoPlace(cb) {
-  console.log('\x1b[36m ninja \x1b[0m moving %s into place %s', EXTRACTED_PATH, DESTINATION_PATH)
+  console.info('\x1b[36m ninja \x1b[0m moving %s into place %s', EXTRACTED_PATH, DESTINATION_PATH)
   rmrf(DESTINATION_PATH, function(err) {
     if (err) return cb(err);
     fs.rename(EXTRACTED_PATH, DESTINATION_PATH, cb)

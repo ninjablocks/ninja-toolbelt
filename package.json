@@ -4,7 +4,7 @@
   "description": "CLI utility belt for Ninja Blocks",
   "main": "index.js",
   "dependencies": {
-    "commander": "~1.0.4",
+    "commander": "~1.1.1",
     "requireindex": "latest",
     "mkdirp": "~0.3.4",
     "unzip": "~0.1.7",
@@ -18,7 +18,7 @@
     "test": "make test"
   },
   "bin": {
-    "ninja": "./ninja"
+    "ninja": "./bin/ninja"
   },
   "repository": "https://github.com/ninjablocks/ninja-toolbelt.git",
   "author": "Daniel Friedman",

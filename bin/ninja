@@ -7,25 +7,20 @@ var spawn = require('child_process').spawn
 
 program
   .version(pkg.version)
-  //.command('install <repository>')
   .usage('<command> [options]')
   .parse(process.argv);
 
-  // executable
-// args void of cmd
 
+// args void of cmd
 var args = process.argv.slice(3);
 
 // command
-
 var cmd = program.args[0];
 
 // alias "install" as "add"
-
 if ('add' == cmd) cmd = 'install';
 
 // display help
-
 if (!cmd) {
   process.stdout.write(program.helpInformation());
   program.emit('--help');
@@ -35,7 +30,6 @@ if (!cmd) {
 var bin = __dirname + '/ninja-' + cmd;
 
 // local
-
 var local = join(__dirname, bin);
 if (exists(local)) bin = local;
 

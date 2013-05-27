@@ -30,8 +30,8 @@ function uninstall(driver,driverPath,configPath) {
     var fullConfigPath = path.join(configPath,driver);
     log('removing configuration at %s',fullConfigPath)
     rmrf.sync(fullConfigPath);
-
   }
+
   process.exit(0);
 }
 

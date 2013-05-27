@@ -89,7 +89,7 @@ function installDependencies(repo,dest) {
 
   // Call configure again because of bitbucket.
   configure.apply(this,arguments)
-
+  var prevDir = process.cwd()
   process.chdir(EXTRACTED_PATH)
 
   async.series([
@@ -98,8 +98,8 @@ function installDependencies(repo,dest) {
     moveIntoPlace
   ],function(err) {
     if (err) {
-      process.chdir('..')
-      rmrf(EXTRACTED_PATH, function(e) {
+      process.chdir(prevDir)
+      rmrf(EXTRACTED_PATH,function(e) {
         error(e||err)
       })
       return

@@ -7,6 +7,7 @@ var async = require('async')
 var path = require('path')
 var npm = require('npm')
 var fs = require('fs')
+
 var DESTINATION_PATH
 var REMOTE_LOCATION
 var EXTRACTED_PATH
@@ -19,22 +20,24 @@ module.exports = function(program) {
 }
 
 function fetch(repo,dest,opts) {
-
+  if (!repo || repo === 'undefined') return error('Refusing to install "%s"', repo)
   opts = (typeof dest === 'object' && dest || opts)
   dest = (typeof dest === 'string' && dest || process.cwd())
 
+  console.log('\x1b[36m ninja \x1b[0m installing %s to %s', repo, dest)
   configure(repo,dest,opts)
 
-  console.log('\x1b[36m','ninja','\x1b[0m','fetching')
+  console.log('\x1b[36m ninja \x1b[0m fetching %s', REMOTE_LOCATION)
 
   request(REMOTE_LOCATION, function(err,resp){
-
     if (err || resp.statusCode !== 200) {
       error(err || 'received http status code '+resp.statusCode);
     }
   }).pipe(unzip.Extract({ path: dest }))
     .on("close", installDependencies.bind(this,repo,dest,opts))
-    .on("error", error)
+    .on("error", function(err) {
+      error('error unzipping', err)
+    })
 }
 
 function configure(repo,dest) {
@@ -71,7 +74,7 @@ function configure(repo,dest) {
 
   // default to github
   if (!repo.match(/github.com/g)) {
-    console.log('\x1b[33m','ninja','\x1b[0m','url not provided, assuming github')
+    console.log('\x1b[33m ninja \x1b[0m url not provided, assuming github %s', repo)
   }
   var sanitized     = repo.replace(/https:\/\/github.com\/|\.git|\/?$/g, '')
   sanitized = sanitized.replace('git@github.com:', '')
@@ -82,7 +85,7 @@ function configure(repo,dest) {
 
 function installDependencies(repo,dest) {
 
-  console.log('\x1b[36m','ninja','\x1b[0m','installing dependencies')
+  console.log('\x1b[36m ninja \x1b[0m installing %s dependencies', repo)
 
   // Call configure again because of bitbucket.
   configure.apply(this,arguments)
@@ -94,7 +97,6 @@ function installDependencies(repo,dest) {
     npm.install,
     moveIntoPlace
   ],function(err) {
-
     if (err) {
       process.chdir('..')
       rmrf(EXTRACTED_PATH, function(e) {
@@ -103,27 +105,21 @@ function installDependencies(repo,dest) {
       return
     }
 
-    console.log('\x1b[32m','ninja','\x1b[0m','done')
+    console.log('\x1b[32m ninja \x1b[0m done %s', repo)
     process.exit(0)
   })
 }
 
 function moveIntoPlace(cb) {
-
-  console.log('\x1b[36m','ninja','\x1b[0m','moving into place')
-
+  console.log('\x1b[36m ninja \x1b[0m moving %s into place %s', EXTRACTED_PATH, DESTINATION_PATH)
   rmrf(DESTINATION_PATH, function(err) {
-
-    if (err) {
-      cb(err);
-      return
-    }
-
+    if (err) return cb(err);
     fs.rename(EXTRACTED_PATH, DESTINATION_PATH, cb)
   })
 }
 
 function error(err) {
-  console.error('\x1b[31m','ninja','\x1b[0m','error:', err)
+  var args = [].slice.call(arguments, 1)
+  console.error.apply(console, ['\x1b[31m ninja \x1b[0m error ' + err].concat(args))
   process.exit(1)
 }

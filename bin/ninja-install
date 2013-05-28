@@ -134,7 +134,11 @@ function moveIntoPlace(cb) {
 }
 
 /**
- * Kill Ninja client. Assume it will be restarted, or we don't care.
+ * Kill Ninja client. Assume it will be restarted, or we don't care if
+ * it isn't.
+ *
+ * @param {Function} cb Callback
+ * @api private
  */
 
 function killClient(cb) {

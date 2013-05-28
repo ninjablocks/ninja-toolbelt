@@ -16,7 +16,8 @@ var EXTRACTED_PATH
 
 program
   .option('-d, --dest [folder]', 'Destination folder', process.cwd())
-  .option('--no-restart', 'Do not restart client after driver installation.', false)
+  .option('--pid [file]', 'file containing pid of ninja client', '')
+  .option('--no-kill', 'Do not kill client after driver installation.', false)
   .description('fetch and install a driver from some repo')
   .parse(process.argv);
 
@@ -92,21 +93,28 @@ function installDependencies(repo,dest) {
 
   // Call configure again because of bitbucket.
   configure.apply(this,arguments)
-  var prevDir = process.cwd()
-  process.chdir(EXTRACTED_PATH)
   async.series([
     npm.load,
     function(done){
-      npm.color =  "always" // must be called after npm.load
+      // must be called after npm.load
+      npm.color =  "always"
       done()
     },
-    npm.install,
+    function(next) {
+      // constrain cwd changes
+      // to just npm install
+      var prevDir = process.cwd()
+      process.chdir(EXTRACTED_PATH)
+      npm.install(function(err) {
+        process.chdir(prevDir)
+        next(err)
+      })
+    },
     moveIntoPlace,
-    restartClient
+    killClient
   ],function(err) {
     if (err) {
       console.error('\x1b[31m ninja \x1b[0m error', err)
-      process.chdir(prevDir)
       rmrf(EXTRACTED_PATH,function(e) {
         error(err)
       })
@@ -125,18 +133,22 @@ function moveIntoPlace(cb) {
   })
 }
 
-function restartClient(cb) {
-  if (program.noRestart) return cb(null)
-  console.info('\x1b[36m ninja \x1b[0m restarting client')
-  //TODO make less sucky
-  var exec = require('child_process').exec
-  exec('pkill -f node\ client.js')
-  .on('error', function(err) {
+/**
+ * Kill Ninja client. Assume it will be restarted, or we don't care.
+ */
+
+function killClient(cb) {
+  if (program.noKill || !program.pid) return cb(null)
+  fs.readFile(path.resolve(process.cwd(), program.pid), function (err, data) {
+    if (err.message.match(/ENOENT/)) return cb() // ignore if no pid file
     if (err) return cb(err)
-  })
-  .on('close', function(err) {
-    return cb(null, err)
-  })
+    var pid = parseInt(data)
+    if (pid) {
+      console.info('\x1b[36m ninja \x1b[0m killing client')
+      process.kill(pid)
+    }
+    cb()
+  });
 }
 
 function error(err) {

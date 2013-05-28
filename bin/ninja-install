@@ -96,7 +96,7 @@ function installDependencies(repo,dest) {
   async.series([
     npm.load,
     function(done){
-      npm.color =  "always"
+      npm.color =  "always" // must be called after npm.load
       done()
     },
     npm.install,

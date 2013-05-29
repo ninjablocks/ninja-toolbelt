@@ -121,7 +121,7 @@ function npmInstall(cb) {
   npm.load(function(err) {
     if (err) return cb(err)
     var args = 'install --color always'
-    var install = spawn(npm.bin + '/npm', args.split(' '), {
+    var install = spawn(__dirname + '/../node_modules/.bin/npm', args.split(' '), {
       cwd: EXTRACTED_PATH,
       stdio: 'inherit'
     })

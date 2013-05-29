@@ -38,11 +38,11 @@ function uninstall(driver, driverPath, configPath) {
     log('removing configuration at %s', fullConfigPath)
     rmrf.sync(fullConfigPath);
   }
-  killClient(function(err) {
+  killClient(program, function(err) {
     if (err) return error(err)
+    console.info('\x1b[32m ninja \x1b[0m done %s', repo)
     process.exit();
   })
-
 }
 
 function validatePackage(folder) {

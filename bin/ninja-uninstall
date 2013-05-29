@@ -32,7 +32,7 @@ function uninstall(driver,driverPath,configPath) {
     rmrf.sync(fullConfigPath);
   }
 
-  process.exit(0);
+  process.exit();
 }
 
 function validatePackage(folder) {

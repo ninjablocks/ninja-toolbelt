@@ -12,9 +12,8 @@ var path = require('path')
  * @api private
  */
 
-exports.killClient = function killClient(program, cb) {
-  var pidFile = program.pid || ''
-  if (program.noKill || !pidFile) return cb()
+exports.killClient = function killClient(pidFile, cb) {
+  if (!pidFile) return cb()
   fs.readFile(path.resolve(process.cwd(), pidFile), function(err, data) {
     if (err) {
       exports.log('could not read pid file %s', pidFile)

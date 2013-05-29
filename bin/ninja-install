@@ -24,7 +24,6 @@ var EXTRACTED_PATH
 program
   .option('-d, --driver-path [path]', 'Location of drivers folder', process.cwd())
   .option('--pid [file]', 'file containing pid of ninja client', '')
-  .option('--no-kill', 'Do not kill client after driver installation.', false)
   .description('fetch and install a driver from some repo')
   .parse(process.argv);
 
@@ -103,7 +102,7 @@ function installDependencies(repo,dest) {
   async.series([
     npmInstall,
     moveIntoPlace,
-    killClient.bind(null, program)
+    killClient.bind(null, program.pid)
   ], function(err) {
     if (err) {
       rmrf(EXTRACTED_PATH, function(e) {

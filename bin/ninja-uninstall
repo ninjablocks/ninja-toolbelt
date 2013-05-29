@@ -15,7 +15,6 @@ program
   .option('-d, --driver-path [path]', 'Location of drivers folder', process.cwd())
   .option('-c, --config-path [path]', 'Location of driver configuration folder')
   .option('--pid [file]', 'file containing pid of ninja client', '')
-  .option('--no-kill', 'Do not kill client after driver installation.', false)
   .description('fetch and install a driver from some repo')
   .parse(process.argv);
 
@@ -38,7 +37,7 @@ function uninstall(driver, driverPath, configPath) {
     log('removing configuration at %s', fullConfigPath)
     rmrf.sync(fullConfigPath);
   }
-  killClient(program, function(err) {
+  killClient(program.pid, function(err) {
     if (err) return error(err)
     console.info('\x1b[32m ninja \x1b[0m done %s', repo)
     process.exit();

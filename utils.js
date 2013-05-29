@@ -18,12 +18,16 @@ exports.killClient = function killClient(program, cb) {
   fs.readFile(path.resolve(process.cwd(), pidFile), function(err, data) {
     if (err) {
       exports.log('could not read pid file %s', pidFile)
-      return cb()
+      return cb(err)
     }
     var pid = parseInt(data)
     if (pid) {
       exports.log('killing client %d', pid)
-      process.kill(pid)
+      try {
+        process.kill(pid)
+      } catch(err) {
+        exports.log('failed to kill client %d', pid)
+      }
     }
     cb()
   });

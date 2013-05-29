@@ -15,7 +15,7 @@
   },
   "devDependencies": {},
   "scripts": {
-    "test": "make test"
+    "test": "mocha"
   },
   "bin": {
     "ninja": "./bin/ninja"

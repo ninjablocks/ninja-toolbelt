@@ -10,6 +10,13 @@ var path = require('path')
 var npm = require('npm')
 var fs = require('fs')
 
+var spawn = require('child_process').spawn
+
+var utils = require('../utils')
+var log = utils.log
+var error = utils.error
+var killClient = utils.killClient
+
 var DESTINATION_PATH
 var REMOTE_LOCATION
 var EXTRACTED_PATH
@@ -96,32 +103,30 @@ function installDependencies(repo,dest) {
   async.series([
     npm.load,
     function(done){
-      // must be called after npm.load
-      npm.color =  "always"
-      done()
-    },
-    function(next) {
-      // constrain cwd changes
-      // to just npm install
-      var prevDir = process.cwd()
-      process.chdir(EXTRACTED_PATH)
-      npm.install(function(err) {
-        process.chdir(prevDir)
-        next(err)
+      var args = 'install --color always'
+      var install = spawn(npm.bin + '/npm', args.split(' '), {
+        cwd: EXTRACTED_PATH,
+        stdio: 'inherit'
+      })
+      install.on('close', function(code) {
+        if (code !== 0) return done(new Error('npm install failed'))
+        log('npm install success')
+        return done()
       })
     },
     moveIntoPlace,
-    killClient
-  ],function(err) {
+    killClient.bind(null, program)
+  ], function(err) {
     if (err) {
-      console.error('\x1b[31m ninja \x1b[0m error', err)
-      rmrf(EXTRACTED_PATH,function(e) {
+      rmrf(EXTRACTED_PATH, function(e) {
+        if (e) console.error('\x1b[31m ninja \x1b[0m error', err)
         error(err)
       })
+      return
     }
 
     console.info('\x1b[32m ninja \x1b[0m done %s', repo)
-    process.exit(0)
+    process.exit()
   })
 }
 
@@ -129,34 +134,9 @@ function moveIntoPlace(cb) {
   console.info('\x1b[36m ninja \x1b[0m moving %s into place %s', EXTRACTED_PATH, DESTINATION_PATH)
   rmrf(DESTINATION_PATH, function(err) {
     if (err) return cb(err);
-    fs.rename(EXTRACTED_PATH, DESTINATION_PATH, cb)
+    fs.rename(EXTRACTED_PATH, DESTINATION_PATH, function(err) {
+      if (err) throw err
+      cb()
+    })
   })
-}
-
-/**
- * Kill Ninja client. Assume it will be restarted, or we don't care if
- * it isn't.
- *
- * @param {Function} cb Callback
- * @api private
- */
-
-function killClient(cb) {
-  if (program.noKill || !program.pid) return cb(null)
-  fs.readFile(path.resolve(process.cwd(), program.pid), function (err, data) {
-    if (err.message.match(/ENOENT/)) return cb() // ignore if no pid file
-    if (err) return cb(err)
-    var pid = parseInt(data)
-    if (pid) {
-      console.info('\x1b[36m ninja \x1b[0m killing client')
-      process.kill(pid)
-    }
-    cb()
-  });
-}
-
-function error(err) {
-  var args = [].slice.call(arguments, 1)
-  console.error.apply(console, ['\x1b[31m ninja \x1b[0m error ' + err].concat(args))
-  process.exit(1)
 }

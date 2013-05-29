@@ -15,13 +15,13 @@ var REMOTE_LOCATION
 var EXTRACTED_PATH
 
 program
-  .option('-d, --dest [folder]', 'Destination folder', process.cwd())
+  .option('-d, --driver-path [path]', 'Location of drivers folder', process.cwd())
   .option('--pid [file]', 'file containing pid of ninja client', '')
   .option('--no-kill', 'Do not kill client after driver installation.', false)
   .description('fetch and install a driver from some repo')
   .parse(process.argv);
 
-fetch(program.args[0], program.dest)
+fetch(program.args[0], program.driverPath)
 
 function fetch(repo,dest,opts) {
   if (!repo || repo === 'undefined') return error('Refusing to install "%s"', repo)

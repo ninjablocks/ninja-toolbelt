@@ -7,8 +7,8 @@ var path = require('path')
 var fs = require('fs')
 
 program
-  .option('-d, --driverPath [folder]', 'Location of drivers folder', process.cwd())
-  .option('-c, --configPath [folder]', 'Location of drivers configuration folder')
+  .option('-d, --driver-path [path]', 'Location of drivers folder', process.cwd())
+  .option('-c, --config-path [path]', 'Location of driver configuration folder')
   .description('fetch and install a driver from some repo')
   .parse(process.argv);
 

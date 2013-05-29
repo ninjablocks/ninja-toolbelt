@@ -6,21 +6,20 @@ var path = require('path')
 var fs = require('fs')
 
 program
-  .option('-d, --directory [folder]', 'Location of drivers folder', process.cwd())
+  .option('-d, --driver-path [path]', 'Location of drivers folder', process.cwd())
   .description('fetch and install a driver from some repo')
   .parse(process.argv);
 
-list(program.directory)
+list(program.driverPath)
 
-function list(directory) {
-
-  var drivers = fs.readdirSync(directory)
+function list(driverPath) {
+  var drivers = fs.readdirSync(driverPath)
     .filter(validatePackage)
     .forEach(log)
 }
 
 function validatePackage(folder) {
-  return fs.existsSync(path.join(program.directory,folder,'package.json'))
+  return fs.existsSync(path.join(program.driverPath,folder, 'package.json'))
 }
 
 function log(driver) {

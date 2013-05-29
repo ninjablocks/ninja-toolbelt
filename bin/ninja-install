@@ -101,19 +101,7 @@ function installDependencies(repo,dest) {
   // Call configure again because of bitbucket.
   configure.apply(this,arguments)
   async.series([
-    npm.load,
-    function(done){
-      var args = 'install --color always'
-      var install = spawn(npm.bin + '/npm', args.split(' '), {
-        cwd: EXTRACTED_PATH,
-        stdio: 'inherit'
-      })
-      install.on('close', function(code) {
-        if (code !== 0) return done(new Error('npm install failed'))
-        log('npm install success')
-        return done()
-      })
-    },
+    npmInstall,
     moveIntoPlace,
     killClient.bind(null, program)
   ], function(err) {
@@ -129,6 +117,23 @@ function installDependencies(repo,dest) {
     process.exit()
   })
 }
+
+function npmInstall(cb) {
+  npm.load(function(err) {
+    if (err) return cb(err)
+    var args = 'install --color always'
+    var install = spawn(npm.bin + '/npm', args.split(' '), {
+      cwd: EXTRACTED_PATH,
+      stdio: 'inherit'
+    })
+    install.on('close', function(code) {
+      if (code !== 0) return done(new Error('npm install failed'))
+      log('npm install success')
+      return cb()
+    })
+  })
+}
+
 
 function moveIntoPlace(cb) {
   console.info('\x1b[36m ninja \x1b[0m moving %s into place %s', EXTRACTED_PATH, DESTINATION_PATH)

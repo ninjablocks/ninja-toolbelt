@@ -17,5 +17,5 @@ drivers(program.driverPath).getInstalledDrivers(function(err, drivers) {
 })
 
 function log(driver) {
-  console.log(driver)
+  console.log(driver.name)
 }

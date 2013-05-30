@@ -24,15 +24,23 @@ module.exports = function(driverPath) {
       if (err) return fn(err)
       from(dirs)
       .pipe(through(function(folder) {
+        this.pause()
         var self = this
         hasPackageJson(folder, function(doesHave) {
-          if (doesHave) self.push(folder)
+          if (doesHave) {
+            self.push(folder)
+          }
+          self.resume()
         })
       }))
       .pipe(through(function(folder) {
+        this.pause()
         var self = this
         getDriverInfo(folder, function(err, info) {
-          if (info) self.push(info)
+          if (info) {
+            self.push(info)
+          }
+          self.resume()
         })
       }))
       .pipe(concat(function(driverInfo) {

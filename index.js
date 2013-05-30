@@ -3,7 +3,10 @@
 var join = require('path').join
 var fs = require('fs')
 var async = require('async')
-
+var error = require('./utils').error
+var from = require('from')
+var through = require('through')
+var concat = require('concat-stream')
 
 module.exports = function(driverPath) {
   // TODO figure out better way to handle
@@ -17,14 +20,24 @@ module.exports = function(driverPath) {
   }
 
   function getInstalledDrivers(fn) {
-    return fs.readdir(driverPath, function(err, dirs) {
+    fs.readdir(driverPath, function(err, dirs) {
       if (err) return fn(err)
-      async.filter(dirs, hasPackageJson, function(driverFolders) {
-        async.map(driverFolders, getDriverName, function(err, folders) {
-          if (err) return fn(err)
-          fn(null, unique(folders))
+      from(dirs)
+      .pipe(through(function(folder) {
+        var self = this
+        hasPackageJson(folder, function(doesHave) {
+          if (doesHave) self.push(folder)
         })
-      })
+      }))
+      .pipe(through(function(folder) {
+        var self = this
+        getDriverInfo(folder, function(err, info) {
+          if (info) self.push(info)
+        })
+      }))
+      .pipe(concat(function(driverInfo) {
+        fn(null, driverInfo || [])
+      }))
     })
   }
 

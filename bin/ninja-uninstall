@@ -39,7 +39,7 @@ function uninstall(driver, driverPath, configPath) {
   }
   killClient(program.pid, function(err) {
     if (err) return error(err)
-    console.info('\x1b[32m ninja \x1b[0m done %s', repo)
+    console.info('\x1b[32m ninja \x1b[0m done %s', driver)
     process.exit();
   })
 }

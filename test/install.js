@@ -41,6 +41,7 @@ describe('install', function() {
     spawn(__dirname + '/../bin/ninja', 'install https://github.com/nexxy/ninja-isight --driver-path /tmp/test --pid /tmp/test/pid.pid'.split(' '), {stdio: 'inherit'})
     .on('error', done)
     .on('close', function(code) {
+      assert(fs.existsSync('/tmp/test/ninja-isight/package.json'))
       assert.notStrictEqual(0, dummyClientExitCode) // if we kill it, it won't exit 0
       assert.strictEqual(0, code)
       done()

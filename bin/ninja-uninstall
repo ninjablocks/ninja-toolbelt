@@ -15,7 +15,7 @@ program
   .option('-d, --driver-path [path]', 'Location of drivers folder', process.cwd())
   .option('-c, --config-path [path]', 'Location of driver configuration folder')
   .option('--pid [file]', 'file containing pid of ninja client', '')
-  .description('fetch and install a driver from some repo')
+  .description('uninstall a driver')
   .parse(process.argv);
 
 uninstall(program.args[0], program.driverPath, program.configPath)

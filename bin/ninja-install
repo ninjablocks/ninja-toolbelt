@@ -128,7 +128,7 @@ function npmInstall(cb) {
       stdio: 'inherit'
     })
     install.on('close', function(code) {
-      if (code !== 0) return done(new Error('npm install failed'))
+      if (code !== 0) return cb(new Error('npm install failed'))
       log('npm install success')
       return cb()
     })

@@ -57,7 +57,7 @@ module.exports = function(driverPath) {
         var driverInfo
       try {
         driverInfo = JSON.parse(data)
-      } catch(err) {
+      } catch (err) {
         return fn(err)
       }
       fn(null, driverInfo)

@@ -21,6 +21,8 @@ var DESTINATION_PATH
 var REMOTE_LOCATION
 var EXTRACTED_PATH
 
+var drivers = require('../')
+
 program
   .option('-d, --driver-path [path]', 'Location of drivers folder', process.cwd())
   .option('--pid [file]', 'file containing pid of ninja client', '')
@@ -133,14 +135,17 @@ function npmInstall(cb) {
   })
 }
 
-
 function moveIntoPlace(cb) {
   console.info('\x1b[36m ninja \x1b[0m moving %s into place %s', EXTRACTED_PATH, DESTINATION_PATH)
-  rmrf(DESTINATION_PATH, function(err) {
+  // TODO this drivers('') thing is bad.
+  drivers('').getDriverInfo(EXTRACTED_PATH, function(err, info) {
     if (err) return cb(err);
-    fs.rename(EXTRACTED_PATH, DESTINATION_PATH, function(err) {
-      if (err) throw err
-      cb()
+    var destinationPath = path.join(program.driverPath, info.name)
+    rmrf(destinationPath, function(err) {
+      if (err) return cb(err);
+      fs.rename(EXTRACTED_PATH, destinationPath, function(err) {
+        cb(err)
+      })
     })
   })
 }

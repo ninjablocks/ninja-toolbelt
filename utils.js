@@ -13,7 +13,7 @@ var path = require('path')
  */
 
 exports.killClient = function killClient(pidFile, cb) {
-  if (!pidFile) return cb()
+  if (!pidFile) return process.nextTick(cb)
   fs.readFile(path.resolve(process.cwd(), pidFile), function(err, data) {
     if (err) {
       exports.log('could not read pid file %s', pidFile)

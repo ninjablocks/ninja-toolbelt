@@ -15,7 +15,8 @@
     "concat-stream": "~1.0.0",
     "from": "~0.1.3",
     "through": "~2.3.4",
-    "passwd": "0.0.11"
+    "passwd": "0.0.11",
+    "ninja-client": "git://github.com/ninjablocks/client.git#master"
   },
   "devDependencies": {},
   "scripts": {

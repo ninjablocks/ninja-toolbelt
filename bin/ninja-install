@@ -137,8 +137,7 @@ function npmInstall(cb) {
 
 function moveIntoPlace(cb) {
   console.info('\x1b[36m ninja \x1b[0m moving %s into place %s', EXTRACTED_PATH, DESTINATION_PATH)
-  // TODO this drivers('') thing is bad.
-  drivers('').getDriverInfo(EXTRACTED_PATH, function(err, info) {
+  drivers().getDriverInfo(EXTRACTED_PATH, function(err, info) {
     if (err) return cb(err)
     var destinationPath = path.join(program.driverPath, info.name)
     rmrf(destinationPath, function(err) {

@@ -9,6 +9,7 @@ var through = require('through')
 var concat = require('concat-stream')
 
 module.exports = function(driverPath) {
+  driverPath = driverPath || ''
   // TODO figure out better way to handle
   // keeping the driver path around
   // between calls.This closure is inflexible

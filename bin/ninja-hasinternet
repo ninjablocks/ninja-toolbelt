@@ -1,0 +1,22 @@
+#!/usr/bin/env node
+"use strict"
+
+var program = require('commander')
+
+var hasinternet = require('../lib/internet')
+
+program
+  .description('does the block have internet?')
+  .option('-v, --verbose', 'verbose output', false)
+  .parse(process.argv);
+
+hasinternet(function(err, isConnected) {
+  // ignore error unless --verbose
+  isConnected
+    ? console.info('yes')
+    : console.info('no')
+  if (program.verbose && !isConnected) console.info(err.message)
+  if (!isConnected) process.exit(1)
+})
+
+

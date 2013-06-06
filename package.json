@@ -16,9 +16,12 @@
     "from": "~0.1.3",
     "through": "~2.3.4",
     "passwd": "0.0.11",
-    "ninja-client": "git://github.com/ninjablocks/client.git#master"
+    "ninja-client": "git://github.com/ninjablocks/client.git#master",
+    "node-networkip": "0.0.3"
   },
-  "devDependencies": {},
+  "devDependencies": {
+    "isme": "~0.3.1"
+  },
   "scripts": {
     "test": "mocha"
   },

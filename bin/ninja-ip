@@ -1,0 +1,18 @@
+#!/usr/bin/env node
+"use strict"
+
+var program = require('commander')
+
+var error = require('../utils').error
+var ipaddress = require('../lib/ipaddress')
+
+program
+  .description('get network ip address of this block')
+  .parse(process.argv);
+
+ipaddress(function(err, ips) {
+  if (err) return error('Could not get IP: %s', err.message)
+  if (!ips.length) error('Block does not have an IP! Are you connected to the internet?')
+  else console.log(ips.join(', '))
+})
+

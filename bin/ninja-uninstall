@@ -21,7 +21,7 @@ program
 
 program.driver = program.args[0]
 
-uninstall(program.driverPath, program.driver, function(err) {
+uninstall(program.driverPath, program.configPath, program.driver, function(err) {
   if (err) return error(err)
   killClient(program.pid, function(err) {
     if (err) return error(err)

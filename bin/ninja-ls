@@ -4,18 +4,14 @@
 var program = require('commander')
 
 var error = require('../utils').error
-var drivers = require('..')
+var drivers = require('../lib/drivers')
 
 program
   .option('-d, --driver-path [path]', 'Location of drivers folder', process.cwd())
   .description('fetch and install a driver from some repo')
   .parse(process.argv);
 
-drivers(program.driverPath).getInstalledDrivers(function(err, drivers) {
+drivers.list(program.driverPath, function(err, info) {
   if (err) return error(err)
-  drivers.forEach(log)
+  console.log(Object.keys(info).join('\n'))
 })
-
-function log(driver) {
-  console.log(driver.name)
-}

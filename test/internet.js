@@ -12,6 +12,7 @@ describe('has internet', function() {
     internet(function(err, hasInternet) {
       // ignore err, it will be truthy if there is no internet
       // (e.g. ENOTFOUND)
+      // pseudo double check of results.
       var connection = net.connect({port: 80, host: 'google.com'}, function() {
         assert.ok(hasInternet)
         connection.end()

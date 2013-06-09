@@ -13,8 +13,6 @@ var DESTINATION_PATH
 var REMOTE_LOCATION
 var EXTRACTED_PATH
 
-var drivers = require('../')
-
 program
   .option('-d, --driver-path [path]', 'Location of drivers folder', process.cwd() + '')
   .option('--pid [file]', 'file containing pid of ninja client', '')

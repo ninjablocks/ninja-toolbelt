@@ -1,16 +1,8 @@
 #!/usr/bin/env node
 "use strict"
 
-var request = require('request')
 var program = require('commander')
-var rmrf = require('rimraf')
-var unzip = require('unzip')
-var async = require('async')
 var path = require('path')
-var npm = require('npm')
-var fs = require('fs')
-
-var spawn = require('child_process').spawn
 
 var utils = require('../utils')
 var log = utils.log
@@ -24,127 +16,21 @@ var EXTRACTED_PATH
 var drivers = require('../')
 
 program
-  .option('-d, --driver-path [path]', 'Location of drivers folder', process.cwd())
+  .option('-d, --driver-path [path]', 'Location of drivers folder', process.cwd() + '')
   .option('--pid [file]', 'file containing pid of ninja client', '')
   .description('fetch and install a driver from some repo')
   .parse(process.argv);
 
-fetch(program.args[0], program.driverPath)
+program.driver = program.args[0]
 
-function fetch(repo,dest,opts) {
-  if (!repo || repo === 'undefined') return error('Refusing to install "%s"', repo)
-  opts = (typeof dest === 'object' && dest || opts)
-  dest = (typeof dest === 'string' && dest || process.cwd())
+var install = require('../lib/drivers').install
 
-  console.info('\x1b[36m ninja \x1b[0m installing %s to %s', repo, dest)
-  configure(repo,dest,opts)
-
-  console.info('\x1b[36m ninja \x1b[0m fetching %s', REMOTE_LOCATION)
-
-  request(REMOTE_LOCATION, function(err,resp){
-    if (err || resp.statusCode !== 200) {
-      error(err || 'received http status code '+resp.statusCode);
-    }
-  }).pipe(unzip.Extract({ path: dest }))
-    .on("close", installDependencies.bind(this,repo,dest,opts))
-    .on("error", function(err) {
-      error('error unzipping', err)
-    })
-}
-
-function configure(repo,dest) {
-
-  // bail if we have been fully configured
-  if (REMOTE_LOCATION && EXTRACTED_PATH && DESTINATION_PATH) return
-
-  // bitbucket
-  if (repo.match(/bitbucket.org/g)) {
-
-    var sanitized     = repo.replace(/https:\/\/bitbucket.org\/|\.git|\/?$/g, '')
-    REMOTE_LOCATION   = 'https://bitbucket.org/' + sanitized + '/get/default.zip'
-    DESTINATION_PATH  = path.resolve(dest, path.basename(sanitized))
-
-    // bitbucket appends the last commit ref
-    // to the folder name that's extracted.
-    // We need to go and try find the folder
-    // after it's been extracted
-
-    var extractedFolder = fs.readdirSync(dest).filter(function(element){
-      return (element.indexOf(sanitized.replace('/','-')) === 0)
-    })
-
-    // due to the above behaviour, we call `configure` twice,
-    // before the archive is downloaded, and after it has been extracted.
-    // in the second call `extractedFolder` will contain the necessary
-    // extracted folder name in the array.
-
-    if (extractedFolder.length === 1)
-      EXTRACTED_PATH = path.resolve(dest, extractedFolder[0])
-
-    return
-  }
-
-  // default to github
-  if (!repo.match(/github.com/g)) {
-    console.info('\x1b[33m ninja \x1b[0m url not provided, assuming github %s', repo)
-  }
-  var sanitized     = repo.replace(/https:\/\/github.com\/|\.git|\/?$/g, '')
-  sanitized = sanitized.replace('git@github.com:', '')
-  REMOTE_LOCATION   = 'https://github.com/' + sanitized + '/archive/master.zip'
-  DESTINATION_PATH  = path.resolve(dest, path.basename(sanitized))
-  EXTRACTED_PATH    = DESTINATION_PATH + '-master'
-}
-
-function installDependencies(repo,dest) {
-
-  console.info('\x1b[36m ninja \x1b[0m installing %s dependencies', repo)
-
-  // Call configure again because of bitbucket.
-  configure.apply(this,arguments)
-  async.series([
-    npmInstall,
-    moveIntoPlace,
-    killClient.bind(null, program.pid)
-  ], function(err) {
-    if (err) {
-      rmrf(EXTRACTED_PATH, function(e) {
-        if (e) console.error('\x1b[31m ninja \x1b[0m error', err)
-        error(err)
-      })
-      return
-    }
-
-    console.info('\x1b[32m ninja \x1b[0m done %s', repo)
-    process.exit()
+install(program.driverPath, program.driver, function(err) {
+  if (err) return error(err)
+  log('install success')
+  killClient(program.pid, function(err) {
+    if (err) return error(err)
+    console.info('\x1b[32m ninja \x1b[0m done %s', program.driver)
+    process.exit();
   })
-}
-
-function npmInstall(cb) {
-  npm.load(function(err) {
-    if (err) return cb(err)
-    var args = 'install --color always'
-    var install = spawn(__dirname + '/../node_modules/.bin/npm', args.split(' '), {
-      cwd: EXTRACTED_PATH,
-      stdio: 'inherit'
-    })
-    install.on('close', function(code) {
-      if (code !== 0) return cb(new Error('npm install failed'))
-      log('npm install success')
-      return cb()
-    })
-  })
-}
-
-function moveIntoPlace(cb) {
-  console.info('\x1b[36m ninja \x1b[0m moving %s into place %s', EXTRACTED_PATH, DESTINATION_PATH)
-  drivers().getDriverInfo(EXTRACTED_PATH, function(err, info) {
-    if (err) return cb(err)
-    var destinationPath = path.join(program.driverPath, info.name)
-    rmrf(destinationPath, function(err) {
-      if (err) return cb(err);
-      fs.rename(EXTRACTED_PATH, destinationPath, function(err) {
-        cb(err)
-      })
-    })
-  })
-}
+})

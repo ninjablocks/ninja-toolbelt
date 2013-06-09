@@ -17,7 +17,8 @@ module.exports = function(driverPath) {
 
   return {
     getInstalledDrivers: getInstalledDrivers,
-    getDriverInfo: getDriverInfo
+    getDriverInfo: getDriverInfo,
+    findPathTo: findPathTo
   }
 
   function getInstalledDrivers(fn) {
@@ -47,6 +48,18 @@ module.exports = function(driverPath) {
       .pipe(concat(function(driverInfo) {
         fn(null, driverInfo || [])
       }))
+    })
+  }
+  
+  function findPathTo(driverName, fn) {
+    getInstalledDrivers(function(err, drivers) {
+      if (err) return fn(err)
+      var match = drivers.filter(function(driver) {
+        return driver.name === driverName
+      })
+      if (!match.length) return fn(new Error('driver not found:' + driverName))
+      var driver = match[0] // assume 1 result.
+      fn(null, driver.path)
     })
   }
 

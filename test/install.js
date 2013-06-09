@@ -3,10 +3,11 @@ var exec = require('child_process').exec
 var spawn = require('child_process').spawn
 var assert = require('assert')
 var rmrf = require('rimraf')
-var fs = require('fs')
+var fs = require('fs-extra')
+
 describe('install', function() {
   beforeEach(function(done) {
-    rmrf('/tmp/test', function(err) {
+    fs.remove('/tmp/test', function(err) {
       if (err) return done(err)
       fs.mkdir('/tmp/test', done)
     })

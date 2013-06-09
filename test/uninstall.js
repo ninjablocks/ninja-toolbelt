@@ -2,9 +2,16 @@
 var exec = require('child_process').exec
 var spawn = require('child_process').spawn
 var assert = require('assert')
-var rmrf = require('rimraf')
-var fs = require('fs')
+var fs = require('fs-extra')
+
 describe('uninstall', function() {
+  before(function(done) {
+    fs.remove('/tmp/test', function(err) {
+      if (err) return done(err)
+      fs.mkdir('/tmp/test', done)
+    })
+  })
+
   before(function(done) {
     this.timeout(60000) // wait a minute…
     exec(__dirname + '/.././bin/ninja install https://github.com/nexxy/ninja-isight --driver-path /tmp/test', function(err) {

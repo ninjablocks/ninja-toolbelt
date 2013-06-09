@@ -13,5 +13,7 @@ program
 
 drivers.list(program.driverPath, function(err, info) {
   if (err) return error(err)
-  console.log(Object.keys(info).join('\n'))
+  console.log(info.map(function(driver){
+    return driver.name + '@' + driver.version
+  }).join('\n'))
 })

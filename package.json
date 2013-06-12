@@ -19,7 +19,8 @@
     "ninja-client": "git://github.com/ninjablocks/client.git#master",
     "node-networkip": "git://github.com/timoxley/Node-NetworkIP.git",
     "hasinternet": "0.0.0",
-    "github-latest": "~0.1.2"
+    "github-latest": "~0.1.2",
+    "fs-extra": "~0.6.1"
   },
   "devDependencies": {
     "isme": "~0.3.1",

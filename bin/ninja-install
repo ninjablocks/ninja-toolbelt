@@ -7,7 +7,7 @@ var path = require('path')
 var utils = require('../utils')
 var log = utils.log
 var error = utils.error
-var killClient = utils.killClient
+var killClient = require('../lib/restart').killClient
 
 var DESTINATION_PATH
 var REMOTE_LOCATION

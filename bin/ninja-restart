@@ -1,0 +1,21 @@
+#!/usr/bin/env node
+"use strict"
+
+var program = require('commander')
+
+var utils = require('../utils')
+var log = utils.log
+var error = utils.error
+
+var killClient = require('../lib/restart').killClient
+
+program
+  .option('--pid [file]', 'file containing pid of ninja client', '/var/run/ninjablock.pid')
+  .description('restart the client process')
+  .parse(process.argv);
+
+killClient(program.pid, function(err) {
+  if (err) return error(err)
+  console.info('\x1b[32m ninja restart \x1b[0m done %s', program.driver)
+  process.exit();
+})

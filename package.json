@@ -34,5 +34,18 @@
   },
   "repository": "https://github.com/ninjablocks/ninja-toolbelt.git",
   "author": "Daniel Friedman",
-  "license": "MIT"
+  "license": "MIT",
+  "diagnostics": {
+    "linux": {
+      "uname": "uname -a",
+      "lsub": "lsusb",
+      "dmesg": "dmesg",
+      "system-errors": "grep error /var/log/syslog",
+      "ninja-errors": "grep error /var/log/ninjablock.log"
+    },
+    "darwin": {
+      "uname": "uname -a",
+      "system-errors": "grep error /var/log/system.log"
+    }
+  }
 }

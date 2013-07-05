@@ -1,0 +1,20 @@
+#!/usr/bin/env node
+"use strict"
+
+var program = require('commander')
+
+var utils = require('../utils')
+var Diagnostic = require('../lib/diagnostic')
+
+program
+  .description('print diagnostic information')
+  .usage('[ '+Object.keys(Diagnostic.list).join(' | ') + ' ]')
+  .parse(process.argv);
+
+var name = program.args
+Diagnostic(name, function(err) {
+  if (err) return utils.error(err.message)
+})
+
+
+

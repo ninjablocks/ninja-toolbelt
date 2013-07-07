@@ -12,9 +12,6 @@ program
   .parse(process.argv);
 
 var name = program.args
-Diagnostic(name, function(err) {
+Diagnostic(name, {stdout: process.stdout, stderr: process.stderr}, function(err) {
   if (err) return utils.error(err.message)
 })
-
-
-

@@ -23,16 +23,21 @@ describe('ninja diagnostic', function() {
 
   describe('bin', function() {
     it('does all diagnostics when not supplied a name', function(done) {
-      var child = spawn(__dirname + '/../bin/ninja-diagnostic')
+      var stderr = ''
+      var child = spawn(__dirname + '/../bin/ninja-diagnostic', [], {env: process.env})
       child.stdout.setEncoding('utf8')
+      child.stderr.setEncoding('utf8')
       child.stdout.pipe(concat(function(data) {
         Object.keys(Diagnostics.list).forEach(function(title){
           assert.ok(data.indexOf(title + ':') !== -1, "Missing header: " + title) // check for headers
         })
         assert.ok(data)
       }))
+      child.stderr.pipe(concat(function(data) {
+        stderr = data
+      }))
       child.on('exit', function(code) {
-        assert.strictEqual(code, 0)
+        assert.strictEqual(code, 0, stderr)
         done()
       })
     })
@@ -41,6 +46,7 @@ describe('ninja diagnostic', function() {
       var list = Object.keys(Diagnostics.list)
       var name = list[0]
       assert.ok(name, "No diagnostics?")
+      var stderr = ''
       var child = spawn(__dirname + '/../bin/ninja-diagnostic', [name])
       child.stdout.setEncoding('utf8')
       child.stdout.pipe(concat(function(data) {
@@ -50,8 +56,11 @@ describe('ninja diagnostic', function() {
         })
         assert.ok(data)
       }))
+      child.stderr.pipe(concat(function(data) {
+        stderr = data
+      }))
       child.on('exit', function(code) {
-        assert.strictEqual(code, 0)
+        assert.strictEqual(code, 0, stderr)
         done()
       })
     })

@@ -27,7 +27,7 @@
     "fs-extra": "~0.6.1"
   },
   "scripts": {
-    "test": "mocha"
+    "test": "mocha test/*.js"
   },
   "bin": {
     "ninja": "./bin/ninja"
@@ -44,8 +44,7 @@
       "ninja-errors": "grep error /var/log/ninjablock.log"
     },
     "darwin": {
-      "uname": "uname -a",
-      "system-errors": "grep error /var/log/system.log"
+      "uname": "uname -a"
     }
   }
 }

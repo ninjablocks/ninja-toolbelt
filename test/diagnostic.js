@@ -29,7 +29,7 @@ describe('ninja diagnostic', function() {
       child.stderr.setEncoding('utf8')
       child.stdout.pipe(concat(function(data) {
         Object.keys(Diagnostics.list).forEach(function(title){
-          assert.ok(data.indexOf(title + ':') !== -1, "Missing header: " + title) // check for headers
+          assert.ok(data.indexOf(title) !== -1, "Missing header: " + title) // check for headers
         })
         assert.ok(data)
       }))
@@ -50,9 +50,9 @@ describe('ninja diagnostic', function() {
       var child = spawn(__dirname + '/../bin/ninja-diagnostic', [name])
       child.stdout.setEncoding('utf8')
       child.stdout.pipe(concat(function(data) {
-        assert.ok(data.indexOf(name + ':') !== -1, "Missing header: " + name) // check for headers
+        assert.ok(data.indexOf(name) !== -1, "Missing header: " + name) // check for headers
         list.slice(1).forEach(function(title){
-          assert.ok(data.indexOf(title + ':') === -1, "Missing header: " + title) // check for headers
+          assert.ok(data.indexOf(title) === -1, "Missing header: " + title) // check for headers
         })
         assert.ok(data)
       }))

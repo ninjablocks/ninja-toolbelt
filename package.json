@@ -44,7 +44,8 @@
       "ninja-errors": "grep error /var/log/ninjablock.log || true"
     },
     "darwin": {
-      "uname": "uname -a"
+      "uname": "uname -a",
+      "system_profiler": "system_profiler"
     }
   }
 }

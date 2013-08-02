@@ -42,6 +42,10 @@
       "dmesg": "dmesg",
       "system-errors": "grep error /var/log/syslog || true",
       "ninja-errors": "grep error /var/log/ninjablock.log || true"
+      "arp": "/usr/sbin/arp -an",
+      "ifconfig": "/sbin/ifconfig -a",
+      "iwconfig": "/sbin/iwconfig",
+      "routes": "/sbin/route -a",
     },
     "darwin": {
       "uname": "uname -a",

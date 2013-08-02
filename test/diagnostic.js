@@ -23,6 +23,7 @@ describe('ninja diagnostic', function() {
 
   describe('bin', function() {
     it('does all diagnostics when not supplied a name', function(done) {
+      this.timeout(60000)
       var stderr = ''
       var child = spawn(__dirname + '/../bin/ninja-diagnostic', [], {env: process.env})
       child.stdout.setEncoding('utf8')
@@ -43,6 +44,7 @@ describe('ninja diagnostic', function() {
     })
 
     it('runs a single diagnostic when passed a name', function(done) {
+      this.timeout(60000)
       var list = Object.keys(Diagnostics.list)
       var name = list[0]
       assert.ok(name, "No diagnostics?")

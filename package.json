@@ -40,6 +40,10 @@
       "uname": "uname -a",
       "lsub": "lsusb",
       "dmesg": "dmesg",
+      "arp": "/usr/sbin/arp -an",
+      "ifconfig": "/sbin/ifconfig -a",
+      "iwconfig": "/sbin/iwconfig",
+      "routes": "/sbin/route -a",
       "system-errors": "grep error /var/log/syslog",
       "ninja-errors": "grep error /var/log/ninjablock.log"
     },

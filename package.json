@@ -40,8 +40,8 @@
       "uname": "uname -a",
       "lsub": "lsusb",
       "dmesg": "dmesg",
-      "system-errors": "grep error /var/log/syslog",
-      "ninja-errors": "grep error /var/log/ninjablock.log"
+      "system-errors": "grep error /var/log/syslog || true",
+      "ninja-errors": "grep error /var/log/ninjablock.log || true"
     },
     "darwin": {
       "uname": "uname -a"
